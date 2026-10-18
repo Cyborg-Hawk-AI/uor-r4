@@ -493,6 +493,15 @@ MANDATORY_WASM_SYMBOLS = [
     ("sampling::exact_min_p_threshold", "sampling21exact_min_p_threshold"),
     ("math::atan2_q30", "math9atan2_q30"),
     ("IntegerModel::step_conversational_into", "IntegerModel24step_conversational_into"),
+    # #1172 serving surface (wasm_serve / wasm_bindgen_exports): the load,
+    # session and step entry points the old module lacked.
+    ("loadStack", "loadStack"),
+    ("step", "step"),
+    ("saveSession", "saveSession"),
+    ("restoreSession", "restoreSession"),
+    ("weightsPerToken", "weightsPerToken"),
+    ("stack::IntegerStackSession::step", "IntegerStackSession4step"),
+    ("stack::stack_argmax", "stack_argmax"),
 ]
 
 

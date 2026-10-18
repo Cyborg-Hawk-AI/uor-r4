@@ -59,3 +59,6 @@ __pycache__/
 # `scripts/storage/research-data restore <name> --run`. The owner checkout keeps a working copy;
 # worktrees must not carry one.
 /research/
+
+# macOS AppleDouble files (ExFAT external drives)
+._*
