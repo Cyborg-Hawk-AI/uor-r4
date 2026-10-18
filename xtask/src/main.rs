@@ -18,9 +18,9 @@ mod gnaf_firewall;
 mod gnaf_manifest;
 mod gnaf_release_path;
 mod gnaf_root;
-mod qubo_codec;
 mod gnaf_scan;
 mod kappa;
+mod qubo_codec;
 
 fn main() -> ExitCode {
     let task = std::env::args()

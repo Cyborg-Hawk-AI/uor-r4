@@ -43,7 +43,7 @@ struct Slot {
 const MAX_SLOTS: usize = 8;
 
 thread_local! {
-    static SLOTS: RefCell<Vec<Option<Slot>>> = const { RefCell::new(Vec::new()) };
+    static SLOTS: RefCell<Vec<Option<Box<Slot>>>> = const { RefCell::new(Vec::new()) };
 }
 
 static LEAKED_MODELS: AtomicU64 = AtomicU64::new(0);
@@ -54,16 +54,12 @@ fn take_error(e: StackError) -> String {
 }
 
 /// One opaque call into the slot table. Every public export goes through
-/// this so the `thread_local`/`RefCell` access (which LLVM strength-reduces
-/// into constant-multiply `i32.mul` when inlined per-callsite) lives in
-/// exactly one out-of-line function, and the export bodies carry none of it.
-/// The closure's work is the export's own; only the borrow crosses the line.
+/// this so the `thread_local`/`RefCell` access lives in one out-of-line
+/// function, and each table entry is `Option<Box<Slot>>` (pointer-sized, a
+/// power of two) so indexing scales by shift rather than `i32.mul`.
 #[inline(never)]
 fn with_slot_mut<R>(handle: u32, f: impl FnOnce(&mut Slot) -> Result<R, String>) -> Result<R, String> {
     SLOTS.with(|t| {
-        // `black_box` on the handle keeps LLVM from strength-reducing the
-        // slot arithmetic (index scaling, the borrow-flag update) into
-        // constant-multiply `i32.mul` in this one out-of-line accessor.
         let handle = core::hint::black_box(handle);
         let mut table = t.borrow_mut();
         let i = handle as usize;
@@ -71,7 +67,7 @@ fn with_slot_mut<R>(handle: u32, f: impl FnOnce(&mut Slot) -> Result<R, String>)
             return Err(slot_lookup_miss(handle));
         }
         match &mut table[i] {
-            Some(slot) => f(slot),
+            Some(slot) => f(slot.as_mut()),
             None => Err(slot_lookup_miss(handle)),
         }
     })
@@ -88,7 +84,7 @@ fn with_slot<R>(handle: u32, f: impl FnOnce(&Slot) -> Result<R, String>) -> Resu
             return Err(slot_lookup_miss(handle));
         }
         match &table[i] {
-            Some(slot) => f(slot),
+            Some(slot) => f(slot.as_ref()),
             None => Err(slot_lookup_miss(handle)),
         }
     })
@@ -98,25 +94,23 @@ fn with_slot<R>(handle: u32, f: impl FnOnce(&Slot) -> Result<R, String>) -> Resu
 /// Returns the model/session handle, or an error string.
 pub fn wasm_load_stack(artifact: &[u8]) -> Result<u32, String> {
     let model = IntegerStackModel::parse(artifact).map_err(take_error)?;
-    let model_ref: &'static IntegerStackModel = Box::leak(Box::new(model));
-    LEAKED_MODELS.fetch_add(1, Ordering::Relaxed);
-    let session = model_ref.session();
-    ALLOC_EVENTS.fetch_add(1, Ordering::Relaxed);
     SLOTS.with(|t| {
         let mut table = t.borrow_mut();
         if table.len() < MAX_SLOTS && table.iter().all(|s| s.is_some()) {
             table.push(None);
         }
-        for (i, slot) in table.iter_mut().enumerate() {
-            if slot.is_none() {
-                *slot = Some(Slot {
-                    model: model_ref,
-                    session,
-                });
-                return Ok(i as u32);
-            }
-        }
-        Err("no free session slots".to_string())
+        let Some((i, slot)) = table.iter_mut().enumerate().find(|(_, s)| s.is_none()) else {
+            return Err("no free session slots".to_string());
+        };
+        let model_ref: &'static IntegerStackModel = Box::leak(Box::new(model));
+        LEAKED_MODELS.fetch_add(1, Ordering::Relaxed);
+        let session = model_ref.session();
+        ALLOC_EVENTS.fetch_add(1, Ordering::Relaxed);
+        *slot = Some(Box::new(Slot {
+            model: model_ref,
+            session,
+        }));
+        Ok(i as u32)
     })
 }
 
@@ -147,7 +141,7 @@ pub fn wasm_step(handle: u32, token: u32) -> Result<StepOut, String> {
         }
         Ok(StepOut {
             next,
-            margin_q16: top1.wrapping_sub(top2),
+            margin_q16: top1.saturating_sub(top2),
             position: slot.session.position() as u32,
         })
     })

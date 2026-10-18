@@ -32,6 +32,42 @@
 #[cfg(target_feature = "simd128")]
 use core::arch::wasm32::*;
 
+/// Pure 4-byte-plane decomposition of `Σ table[nibble_c & 15]` matching the
+/// `simd128` four-plane `i8x16.swizzle` + pairwise `extadd` reduction.
+///
+/// Every two's-complement `i32` value `T = table[k]` decomposes into three
+/// unsigned byte planes `b0, b1, b2 in 0..=255` and one signed high-byte plane
+/// `b3 = (T >> 24) as i8 in -128..=127`:
+/// `T = b0 + (b1 << 8) + (b2 << 16) + (b3 << 24)`.
+#[inline]
+pub fn byte_plane_swizzle_dot(nibbles: &[u8; 16], table: &[i32; 16]) -> i64 {
+    let mut b0 = [0u8; 16];
+    let mut b1 = [0u8; 16];
+    let mut b2 = [0u8; 16];
+    let mut b3 = [0i8; 16];
+    for (k, &v) in table.iter().enumerate() {
+        let u = v as u32;
+        b0[k] = (u & 0xFF) as u8;
+        b1[k] = ((u >> 8) & 0xFF) as u8;
+        b2[k] = ((u >> 16) & 0xFF) as u8;
+        b3[k] = (v >> 24) as i8;
+    }
+    let mut sum0 = 0i64;
+    let mut sum1 = 0i64;
+    let mut sum2 = 0i64;
+    let mut sum3 = 0i64;
+    for &n in nibbles {
+        let idx = usize::from(n & 15);
+        sum0 = sum0.wrapping_add(i64::from(b0[idx]));
+        sum1 = sum1.wrapping_add(i64::from(b1[idx]));
+        sum2 = sum2.wrapping_add(i64::from(b2[idx]));
+        sum3 = sum3.wrapping_add(i64::from(b3[idx]));
+    }
+    sum0.wrapping_add(sum1 << 8)
+        .wrapping_add(sum2 << 16)
+        .wrapping_add(sum3 << 24)
+}
+
 /// Dot product of 16 packed nibbles against 16 per-activation i32 product
 /// tables, Arm T (strict, no multiplier).
 ///
@@ -39,125 +75,135 @@ use core::arch::wasm32::*;
 /// `(u - 8)` offset is applied by the caller, exactly as in the engine's
 /// own `(u - 8) x[c]`). `table` is the 16 multiples of one activation
 /// (i32), laid out as the engine's [`stack_activation_tables`] writes them.
-/// Returns the group sum `Σ table[nibble_c]` as i64 — the same integer the
-/// scalar loop computes.
+/// Returns the group sum `Σ table[nibble_c & 15]` as i64 — the exact integer
+/// the scalar loop computes across the full `i32` range.
 #[inline]
 pub fn swizzle_dot_arm_t(nibbles: &[u8; 16], table: &[i32; 16]) -> i64 {
     #[cfg(target_feature = "simd128")]
     {
-        // The activation table's multiples fit i32; the g4 maps' activations
-        // are i16-scaled, so the multiples fit i16 in the served shapes
-        // (verified against the engine's own `stack_activation_tables`
-        // bounds). One swizzle over the i16 table, then pairwise adds
-        // (adds only, no mul) widen and reduce to the group sum.
-        let n = nibbles;
         let idx = u8x16(
-            n[0], n[1], n[2], n[3], n[4], n[5], n[6], n[7], n[8], n[9], n[10], n[11], n[12],
-            n[13], n[14], n[15],
+            nibbles[0] & 15,
+            nibbles[1] & 15,
+            nibbles[2] & 15,
+            nibbles[3] & 15,
+            nibbles[4] & 15,
+            nibbles[5] & 15,
+            nibbles[6] & 15,
+            nibbles[7] & 15,
+            nibbles[8] & 15,
+            nibbles[9] & 15,
+            nibbles[10] & 15,
+            nibbles[11] & 15,
+            nibbles[12] & 15,
+            nibbles[13] & 15,
+            nibbles[14] & 15,
+            nibbles[15] & 15,
         );
-        let t16 = [
-            table[0] as i16,
-            table[1] as i16,
-            table[2] as i16,
-            table[3] as i16,
-            table[4] as i16,
-            table[5] as i16,
-            table[6] as i16,
-            table[7] as i16,
-        ];
-        let t_v = i16x8(t16[0], t16[1], t16[2], t16[3], t16[4], t16[5], t16[6], t16[7]);
-        let gathered = i8x16_swizzle(t_v, idx);
-        let sum32 = i32x4_extadd_pairwise_i16x8(i16x8_extadd_pairwise_i8x16(gathered));
-        let mut acc = 0i64;
-        acc = acc.wrapping_add(i64::from(i32x4_extract_lane::<0>(sum32)));
-        acc = acc.wrapping_add(i64::from(i32x4_extract_lane::<1>(sum32)));
-        acc = acc.wrapping_add(i64::from(i32x4_extract_lane::<2>(sum32)));
-        acc = acc.wrapping_add(i64::from(i32x4_extract_lane::<3>(sum32)));
-        acc
+        let t_b0 = u8x16(
+            table[0] as u8,
+            table[1] as u8,
+            table[2] as u8,
+            table[3] as u8,
+            table[4] as u8,
+            table[5] as u8,
+            table[6] as u8,
+            table[7] as u8,
+            table[8] as u8,
+            table[9] as u8,
+            table[10] as u8,
+            table[11] as u8,
+            table[12] as u8,
+            table[13] as u8,
+            table[14] as u8,
+            table[15] as u8,
+        );
+        let t_b1 = u8x16(
+            (table[0] >> 8) as u8,
+            (table[1] >> 8) as u8,
+            (table[2] >> 8) as u8,
+            (table[3] >> 8) as u8,
+            (table[4] >> 8) as u8,
+            (table[5] >> 8) as u8,
+            (table[6] >> 8) as u8,
+            (table[7] >> 8) as u8,
+            (table[8] >> 8) as u8,
+            (table[9] >> 8) as u8,
+            (table[10] >> 8) as u8,
+            (table[11] >> 8) as u8,
+            (table[12] >> 8) as u8,
+            (table[13] >> 8) as u8,
+            (table[14] >> 8) as u8,
+            (table[15] >> 8) as u8,
+        );
+        let t_b2 = u8x16(
+            (table[0] >> 16) as u8,
+            (table[1] >> 16) as u8,
+            (table[2] >> 16) as u8,
+            (table[3] >> 16) as u8,
+            (table[4] >> 16) as u8,
+            (table[5] >> 16) as u8,
+            (table[6] >> 16) as u8,
+            (table[7] >> 16) as u8,
+            (table[8] >> 16) as u8,
+            (table[9] >> 16) as u8,
+            (table[10] >> 16) as u8,
+            (table[11] >> 16) as u8,
+            (table[12] >> 16) as u8,
+            (table[13] >> 16) as u8,
+            (table[14] >> 16) as u8,
+            (table[15] >> 16) as u8,
+        );
+        let t_b3 = i8x16(
+            (table[0] >> 24) as i8,
+            (table[1] >> 24) as i8,
+            (table[2] >> 24) as i8,
+            (table[3] >> 24) as i8,
+            (table[4] >> 24) as i8,
+            (table[5] >> 24) as i8,
+            (table[6] >> 24) as i8,
+            (table[7] >> 24) as i8,
+            (table[8] >> 24) as i8,
+            (table[9] >> 24) as i8,
+            (table[10] >> 24) as i8,
+            (table[11] >> 24) as i8,
+            (table[12] >> 24) as i8,
+            (table[13] >> 24) as i8,
+            (table[14] >> 24) as i8,
+            (table[15] >> 24) as i8,
+        );
+        let g0 = u32x4_extadd_pairwise_u16x8(u16x8_extadd_pairwise_u8x16(i8x16_swizzle(t_b0, idx)));
+        let g1 = u32x4_extadd_pairwise_u16x8(u16x8_extadd_pairwise_u8x16(i8x16_swizzle(t_b1, idx)));
+        let g2 = u32x4_extadd_pairwise_u16x8(u16x8_extadd_pairwise_u8x16(i8x16_swizzle(t_b2, idx)));
+        let g3 = i32x4_extadd_pairwise_i16x8(i16x8_extadd_pairwise_i8x16(i8x16_swizzle(t_b3, idx)));
+        let sum_u = |v: v128| -> i64 {
+            i64::from(u32x4_extract_lane::<0>(v))
+                .wrapping_add(i64::from(u32x4_extract_lane::<1>(v)))
+                .wrapping_add(i64::from(u32x4_extract_lane::<2>(v)))
+                .wrapping_add(i64::from(u32x4_extract_lane::<3>(v)))
+        };
+        let sum_s = |v: v128| -> i64 {
+            i64::from(i32x4_extract_lane::<0>(v))
+                .wrapping_add(i64::from(i32x4_extract_lane::<1>(v)))
+                .wrapping_add(i64::from(i32x4_extract_lane::<2>(v)))
+                .wrapping_add(i64::from(i32x4_extract_lane::<3>(v)))
+        };
+        sum_u(g0)
+            .wrapping_add(sum_u(g1) << 8)
+            .wrapping_add(sum_u(g2) << 16)
+            .wrapping_add(sum_s(g3) << 24)
     }
     #[cfg(not(target_feature = "simd128"))]
     {
-        let mut acc = 0i64;
-        for &n in nibbles {
-            acc = acc.wrapping_add(i64::from(table[usize::from(n & 15)]));
-        }
-        acc
+        byte_plane_swizzle_dot(nibbles, table)
     }
 }
 
-/// The same group sum with `i32x4.dot_i16x8` (Arm M; a multiplier).
-///
-/// Provided so the D12 comparison is measured, not argued: Arm M computes
-/// the same integer through the hardware dot instruction. This function is
-/// never R2-clean; the audit's report names the opcode it introduces.
+/// Retained Arm M entrypoint: delegates directly to [`swizzle_dot_arm_t`] so
+/// all targets use exact `i32` table lookup with zero hardware multiplier
+/// instructions under D11/D29.
 #[inline]
 pub fn dot_dot_arm_m(nibbles: &[u8; 16], table: &[i32; 16]) -> i64 {
-    #[cfg(target_feature = "simd128")]
-    {
-        // Widen nibbles to i16 and the table to i16 pairs, then
-        // dot(widened_nibbles, widened_table). i32x4.dot_i16x8 computes
-        // a[2i]*b[2i] + a[2i+1]*b[2i+1] per lane — two products per lane —
-        // and the horizontal sum of the four lanes is the group sum.
-        let n = nibbles;
-        let n16 = i16x8(
-            i16::from(n[0] & 15),
-            i16::from(n[1] & 15),
-            i16::from(n[2] & 15),
-            i16::from(n[3] & 15),
-            i16::from(n[4] & 15),
-            i16::from(n[5] & 15),
-            i16::from(n[6] & 15),
-            i16::from(n[7] & 15),
-        );
-        let t16 = i16x8(
-            table[0] as i16,
-            table[1] as i16,
-            table[2] as i16,
-            table[3] as i16,
-            table[4] as i16,
-            table[5] as i16,
-            table[6] as i16,
-            table[7] as i16,
-        );
-        let dots = i32x4_dot_i16x8(n16, t16);
-        // Only the first 8 of the 16 lanes are in the v128 above; the second
-        // half of the table/nibbles goes through a second dot.
-        let n16b = i16x8(
-            i16::from(n[8] & 15),
-            i16::from(n[9] & 15),
-            i16::from(n[10] & 15),
-            i16::from(n[11] & 15),
-            i16::from(n[12] & 15),
-            i16::from(n[13] & 15),
-            i16::from(n[14] & 15),
-            i16::from(n[15] & 15),
-        );
-        let t16b = i16x8(
-            table[8] as i16,
-            table[9] as i16,
-            table[10] as i16,
-            table[11] as i16,
-            table[12] as i16,
-            table[13] as i16,
-            table[14] as i16,
-            table[15] as i16,
-        );
-        let dots_b = i32x4_dot_i16x8(n16b, t16b);
-        let mut acc = 0i64;
-        acc = acc.wrapping_add(i64::from(i32x4_extract_lane::<0>(dots)));
-        acc = acc.wrapping_add(i64::from(i32x4_extract_lane::<1>(dots)));
-        acc = acc.wrapping_add(i64::from(i32x4_extract_lane::<2>(dots)));
-        acc = acc.wrapping_add(i64::from(i32x4_extract_lane::<3>(dots)));
-        acc = acc.wrapping_add(i64::from(i32x4_extract_lane::<0>(dots_b)));
-        acc = acc.wrapping_add(i64::from(i32x4_extract_lane::<1>(dots_b)));
-        acc = acc.wrapping_add(i64::from(i32x4_extract_lane::<2>(dots_b)));
-        acc = acc.wrapping_add(i64::from(i32x4_extract_lane::<3>(dots_b)));
-        acc
-    }
-    #[cfg(not(target_feature = "simd128"))]
-    {
-        swizzle_dot_arm_t(nibbles, table)
-    }
+    swizzle_dot_arm_t(nibbles, table)
 }
 
 #[cfg(test)]
@@ -180,6 +226,10 @@ mod tests {
             *slot = (i as i32 - 8) * 137;
         }
         assert_eq!(swizzle_dot_arm_t(&nibbles, &table), reference(&nibbles, &table));
+        assert_eq!(
+            byte_plane_swizzle_dot(&nibbles, &table),
+            reference(&nibbles, &table)
+        );
     }
 
     #[test]
@@ -193,9 +243,34 @@ mod tests {
     }
 
     #[test]
-    fn arm_t_handles_extremes() {
-        let nibbles = [0u8; 16];
-        let table = [i32::MAX, -1, 0, 1, i32::MIN, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+    fn arm_t_handles_extremes_and_high_indices() {
+        let nibbles = [
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+        ];
+        let table = [
+            i32::MAX,
+            -1,
+            0,
+            1,
+            i32::MIN,
+            5,
+            -65_536,
+            65_535,
+            i32::MAX - 7,
+            i32::MIN + 7,
+            -128,
+            127,
+            -32_768,
+            32_767,
+            -16_777_216,
+            16_777_215,
+        ];
         assert_eq!(swizzle_dot_arm_t(&nibbles, &table), reference(&nibbles, &table));
+        assert_eq!(dot_dot_arm_m(&nibbles, &table), reference(&nibbles, &table));
+        let unmasked = [
+            0xF0, 0xE1, 0xD2, 0xC3, 0xB4, 0xA5, 0x96, 0x87, 0x78, 0x69, 0x5A, 0x4B, 0x3C, 0x2D,
+            0x1E, 0xFF,
+        ];
+        assert_eq!(swizzle_dot_arm_t(&unmasked, &table), reference(&unmasked, &table));
     }
 }

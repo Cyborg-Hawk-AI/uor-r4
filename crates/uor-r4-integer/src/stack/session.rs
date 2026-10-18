@@ -1660,6 +1660,7 @@ impl IntegerStackSession<'_> {
 // register (`fmov`), and no arithmetic of ours is inlined into them.
 
 /// One step to run on the pool, and its outcome.
+#[cfg(not(target_arch = "wasm32"))]
 struct StepCall<'s, 'm> {
     session: &'s mut IntegerStackSession<'m>,
     token: u32,
@@ -1668,6 +1669,7 @@ struct StepCall<'s, 'm> {
 
 /// [`stack_step`] of a [`StepCall`], on the model's pool.
 #[inline(never)]
+#[cfg(not(target_arch = "wasm32"))]
 fn stack_step_call(call: &mut StepCall<'_, '_>) {
     call.result = stack_step(call.session, call.token, true);
 }
@@ -1997,7 +1999,6 @@ fn stack_swiglu(model: &IntegerStackModel, gate: &[i32], up: &[i32], out: &mut [
 /// One recurrence step from the normalized state (pair tables built), into
 /// `b.proj`.
 #[inline(never)]
-#[inline(never)]
 fn stack_recurrence(
     model: &IntegerStackModel,
     r: &Recurrence,
@@ -2020,14 +2021,16 @@ fn stack_recurrence(
     for (g, bias) in b.gate_out.iter_mut().zip(&r.gate_bias) {
         *g = g.saturating_add(*bias);
     }
-    let (drive, gate) = b.branches.split_at(d);
+    let (drive, gate) = b.branches.split_at(core::hint::black_box(d));
     // Causal convolution of the drive: this position and the three before it
     // (zero before the stream starts), at exponent -16.
-    let (tap0, rest) = r.taps.split_at(d);
-    let (tap1, rest) = rest.split_at(d);
-    let (tap2, tap3) = rest.split_at(d);
-    let (back1, rest) = history.split_at(d);
-    let (back2, back3) = rest.split_at(d);
+    // `black_box(d)` prevents LLVM from combining three `i16` pointer advances
+    // (`2*d + 2*d + 2*d`) into `d * 6` (`i32.mul`).
+    let (tap0, rest) = r.taps.split_at(core::hint::black_box(d));
+    let (tap1, rest) = rest.split_at(core::hint::black_box(d));
+    let (tap2, tap3) = rest.split_at(core::hint::black_box(d));
+    let (back1, rest) = history.split_at(core::hint::black_box(d));
+    let (back2, back3) = rest.split_at(core::hint::black_box(d));
     for (i, slot) in b.wide.iter_mut().enumerate().take(d) {
         let c = i64::from(r.conv_bias[i])
             .wrapping_add(grid_apply(i64::from(drive[i]), tap0[i]))
@@ -2037,7 +2040,7 @@ fn stack_recurrence(
         *slot = c;
     }
     // Age the history by one position: the oldest row drops off the end.
-    history.copy_within(..history.len() - d, d);
+    history.copy_within(..history.len() - core::hint::black_box(d), core::hint::black_box(d));
     history[..d].copy_from_slice(drive);
     let (decays, rotations) = b.gate_out.split_at(lanes);
     let (wide, rates) = (&b.wide[..d], &r.rates[..]);
@@ -2650,7 +2653,9 @@ fn stack_heads(read: &HeadRead<'_>, parts: HeadParts<'_>) {
             }
             total
         };
-        mix.fill(0);
+        for slot in mix.iter_mut() {
+            *slot = core::hint::black_box(0);
+        }
         let mut value_at = head_at;
         for &w in weights.iter() {
             if w != 0 {
@@ -2736,7 +2741,9 @@ fn stack_rank_weights(
         let at = *rank.row_at.get(m)?;
         (learned.get(at..at + m)?, 1u64 << 31)
     };
-    weights.fill(0);
+    for slot in weights.iter_mut() {
+        *slot = core::hint::black_box(0);
+    }
     for (index, entry) in entries.iter().enumerate() {
         let slot = if index >= null_rank { index + 1 } else { index };
         *weights.get_mut(entry.position)? = u64::from(*table.get(slot)?);

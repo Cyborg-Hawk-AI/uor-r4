@@ -149,12 +149,24 @@ struct Reader<'a> {
 
 impl<'a> Reader<'a> {
     fn take(&mut self, n: usize) -> Result<&'a [u8], String> {
-        if self.at + n > self.buf.len() {
+        let end = self
+            .at
+            .checked_add(n)
+            .ok_or_else(|| "session codec: truncated input".to_string())?;
+        if end > self.buf.len() {
             return Err("session codec: truncated input".to_string());
         }
-        let s = &self.buf[self.at..self.at + n];
-        self.at += n;
+        let s = &self.buf[self.at..end];
+        self.at = end;
         Ok(s)
+    }
+    fn checked_count(&mut self, elem_shift: u32) -> Result<usize, String> {
+        let raw = self.v64()?;
+        let n = usize::try_from(raw).map_err(|_| "session codec: truncated input".to_string())?;
+        if n > ((self.buf.len() - self.at) >> elem_shift) {
+            return Err("session codec: truncated input".to_string());
+        }
+        Ok(n)
     }
     fn u8(&mut self) -> Result<u8, String> {
         Ok(self.take(1)?[0])
@@ -196,7 +208,7 @@ impl<'a> Reader<'a> {
         String::from_utf8(b.to_vec()).map_err(|_| "session codec: invalid utf-8".to_string())
     }
     fn i32s(&mut self) -> Result<Vec<i32>, String> {
-        let n = self.v64()? as usize;
+        let n = self.checked_count(2)?;
         let mut v = Vec::with_capacity(n);
         for _ in 0..n {
             v.push(self.i32()?);
@@ -204,7 +216,7 @@ impl<'a> Reader<'a> {
         Ok(v)
     }
     fn u32s(&mut self) -> Result<Vec<u32>, String> {
-        let n = self.v64()? as usize;
+        let n = self.checked_count(2)?;
         let mut v = Vec::with_capacity(n);
         for _ in 0..n {
             v.push(self.u32()?);
@@ -212,7 +224,7 @@ impl<'a> Reader<'a> {
         Ok(v)
     }
     fn i64s(&mut self) -> Result<Vec<i64>, String> {
-        let n = self.v64()? as usize;
+        let n = self.checked_count(3)?;
         let mut v = Vec::with_capacity(n);
         for _ in 0..n {
             v.push(self.i64()?);
@@ -220,7 +232,7 @@ impl<'a> Reader<'a> {
         Ok(v)
     }
     fn u64s(&mut self) -> Result<Vec<u64>, String> {
-        let n = self.v64()? as usize;
+        let n = self.checked_count(3)?;
         let mut v = Vec::with_capacity(n);
         for _ in 0..n {
             v.push(self.u64()?);
@@ -254,7 +266,7 @@ pub fn decode(bytes: &[u8]) -> Result<SerializedStackSession, String> {
     let pointer_keys = r.i32s()?;
     let pointer_lifts = r.u64s()?;
     let mixture = r.i32s()?;
-    let layer_count = r.v64()? as usize;
+    let layer_count = r.checked_count(0)?;
     let mut layers = Vec::with_capacity(layer_count);
     for _ in 0..layer_count {
         match r.u8()? {
@@ -365,5 +377,21 @@ mod tests {
         assert!(decode(&bytes).is_err());
         let bytes = encode(&s);
         assert!(decode(&bytes[..bytes.len() - 1]).is_err());
+    }
+
+    #[test]
+    fn rejects_oversized_varint_slice_count_without_oom() {
+        let mut out = Vec::new();
+        out.extend_from_slice(MAGIC);
+        put_str(&mut out, STACK_SESSION_SCHEMA);
+        put_u32(&mut out, 1);
+        put_str(&mut out, &"ab".repeat(32));
+        put_u64(&mut out, 1);
+        put_u64(&mut out, 288);
+        put_u64(&mut out, 6);
+        put_i32(&mut out, 65_536);
+        // Malicious varint count for logits: u64::MAX
+        put_v64(&mut out, u64::MAX);
+        assert!(decode(&out).is_err());
     }
 }

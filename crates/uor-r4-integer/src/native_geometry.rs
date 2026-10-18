@@ -83,6 +83,7 @@ impl From<serde_json::Error> for IntegerError {
 #[cfg(not(feature = "serving-wasm"))]
 pub type Result<T> = std::result::Result<T, IntegerError>;
 #[cfg(not(feature = "serving-wasm"))]
+#[allow(dead_code)]
 pub(crate) fn invalid(message: impl Into<String>) -> IntegerError {
     IntegerError::Invalid(message.into())
 }

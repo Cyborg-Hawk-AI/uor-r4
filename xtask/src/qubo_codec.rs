@@ -18,8 +18,6 @@
 //! The result is measured against round-to-nearest on the same group's
 //! output Frobenius error, so the comparison is apples-to-apples.
 
-use std::f64::consts::PI;
-
 /// One QUBO subproblem: the output error of one row's group of weights.
 ///
 /// `w` are the float weights of the group (fan-in values), `scale` is the
@@ -64,12 +62,16 @@ impl GroupQubo {
     pub fn solve_sa(&self, seed: u64, sweeps: usize) -> (Vec<i8>, f64) {
         let mut rng = Lcg(seed);
         let mut q = self.rtn_codes();
+        let mut best_q = q.clone();
         let mut best_err = self.error(&q);
         let mut err = best_err;
         let n = q.len();
+        if n == 0 {
+            return (best_q, best_err);
+        }
         for sweep in 0..sweeps {
             let t0 = 1.0;
-            let temp = t0 * (1.0 - sweep as f64 / sweeps as f64).max(1e-3);
+            let temp = t0 * (1.0 - sweep as f64 / sweeps.max(1) as f64).max(1e-3);
             for _ in 0..n {
                 let i = (rng.next() as usize) % n;
                 // Candidate: flip weight i up or down by one code step.
@@ -87,11 +89,12 @@ impl GroupQubo {
                     err = e2;
                     if err < best_err {
                         best_err = err;
+                        best_q = q.clone();
                     }
                 }
             }
         }
-        (q, best_err)
+        (best_q, best_err)
     }
 }
 
@@ -105,7 +108,7 @@ impl Lcg {
         self.0 >> 33
     }
     fn next_f64(&mut self) -> f64 {
-        (self.next() as f64) / (u64::MAX as f64)
+        (self.next() as f64) / ((1u64 << 31) as f64)
     }
 }
 
@@ -124,5 +127,36 @@ pub fn benchmark(seed: u64, group_size: usize, sweeps: usize) -> (f64, f64, f64)
     let q = GroupQubo { w, scale, x };
     let rtn_err = q.error(&q.rtn_codes());
     let (_, sa_err) = q.solve_sa(seed, sweeps);
-    (rtn_err, sa_err, if rtn_err > 0.0 { sa_err / rtn_err } else { 1.0 })
+    (
+        rtn_err,
+        sa_err,
+        if rtn_err > 0.0 { sa_err / rtn_err } else { 1.0 },
+    )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn lcg_next_f64_spans_unit_interval() {
+        let mut rng = Lcg(0xD11);
+        let mut min_v = 1.0f64;
+        let mut max_v = 0.0f64;
+        for _ in 0..256 {
+            let v = rng.next_f64();
+            assert!((0.0..1.0).contains(&v));
+            min_v = min_v.min(v);
+            max_v = max_v.max(v);
+        }
+        assert!(min_v < 0.2, "min_v={min_v}");
+        assert!(max_v > 0.8, "max_v={max_v}");
+    }
+
+    #[test]
+    fn sa_improves_on_rtn_benchmark() {
+        let (rtn_err, sa_err, ratio) = benchmark(0xD11, 32, 64);
+        assert!(sa_err <= rtn_err);
+        assert!(ratio < 1.0, "expected SA < RTN, got ratio={ratio}");
+    }
 }

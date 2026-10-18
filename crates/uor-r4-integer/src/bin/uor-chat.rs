@@ -1063,6 +1063,7 @@ fn run_stack_chat(cli: &CliArgs) -> std::result::Result<(), StackCliError> {
                 .into(),
         ));
     }
+    #[cfg_attr(target_arch = "wasm32", allow(unused_mut))]
     let mut model = IntegerStackModel::load(artifact)?;
     #[cfg(not(target_arch = "wasm32"))]
     model.set_threads(cli.threads)?;
