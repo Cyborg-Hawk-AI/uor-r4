@@ -63,3 +63,8 @@ required-features = ["serving-wasm"]
 name = "uor-r4-stack"
 path = "src/bin/uor-r4-stack.rs"
 required-features = ["serving-wasm"]
+
+[[bin]]
+name = "mk-synthetic-stack"
+path = "src/bin/mk-synthetic-stack.rs"
+required-features = ["serving-wasm"]
