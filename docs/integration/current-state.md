@@ -1,3 +1,143 @@
+## 2026-10-18 — Native SVG composition repaired; independent visual review pending
+
+[Visual repair record](../labs/svg-visual-repair-2026-10-18/README.md) identifies Claude's original mathematical figures and landscape schema in #2057/#2059/#2090/#2298, with before/after embedded-page previews. The architecture returns to restrained horizontal lanes with a separate narrow SVG; mathematical geometry stays intact while zeta annotations and scoped quaternion/600-cell/E8 labels are corrected. This is documentation-only: no model result, scientific gate or owner hold changes, and #2662's timing waiver remains preserved. **Next:** independent inspection of the exact PR head and rendered pixels; keep the PR unmerged until that review, then follow the already-authorized protected delivery path.
+
+## 2026-10-18  Laptop/reap archive verification before pod destruction (deepseek)
+
+Closes the remaining pod-custody hole after #2629: the default laptop tar archive and reap paths
+destroyed the pod without verifying the copy, and reap deleted even when archiving failed. Adds a
+pod-vs-laptop count + sorted SHA-256 manifest digest check before delete; the ledger records
+verified/files/manifest_sha256; reap now retains the pod on archive failure. Dry-run suite 373 passed /
+0 failed, including a digest-mismatch retention case. Host-only, no model compute.
+Record: [labs/pod-laptop-archive-verify-2026-10-18](../labs/pod-laptop-archive-verify-2026-10-18/README.md).
+PR: (added after creation).
+
+## 2026-10-18 — Explicit rows_v1 K16 timing adapter; existing A/R release sequence reconciled (Codex)
+
+Adds the default-preserving counterfactual selector to the standalone K16 timing instrument. Warmup and measured proposals use the production cached rows entry; plan, sample and cell receipts bind the actual path and rows image inventory. Unknown variants and rows with the lanes-only subphase profiler refuse before CUDA.100timed+1excluded, both policies and source-selection validation, synchronization, zero-apply and forward-only rate scope are unchanged. Host checks:49PASS/0FAIL/1ignored with1explicitly filtered inherited reuse-identity test; unfiltered49PASS/1FAIL/1ignored, caused by the historical frozen ordinary-source guard after#2601; no guard relaxed. Formatting/host Clippy pass with inherited warnings; CUDA/model/provider/scorer NOT_RUN. [Canonical source and limits](../labs/k16-rows-timing-source-2026-10-18/README.md). [Owner relay6250410397](https://github.com/UOR-Foundation/uor-r4/issues/2029#issuecomment-6250410397) renews the existing FIT K16-A/R redirect on rows_v1, seeds1/2, Route/canonical16404each. [PM6250526855](https://github.com/UOR-Foundation/uor-r4/issues/2029#issuecomment-6250526855): preparation GO; actual qualification, owner-waived two-cell checkpoint-0 A/R100sampletiming and accepted measured D-Packet precede training under the existing conditional release. No repeated strategic ownerack or imported K8/B3 gate. Claude owns R/K16 qualifier; Codex timing/operator/packet; AGY consumer; Kimi acceptance/dispatch. The separately consumed attention Q1 outcome is now independently reviewed as configured admission collapse with no implementation/identity fault found; no mechanism verdict, KEEP, paired advantage, fresh result or reset. Reply37/232 SUSPENDED and attention count0/3 remain. $0 new paid resource.
+
+**Later owner waiver:** [6251027125](https://github.com/UOR-Foundation/uor-r4/issues/2029#issuecomment-6251027125), delivered in#2662, removes the two Q4 timing cells and importer from the critical path. Qualification uses checkpoint-0 A/R100samples each; scientific gates, four training trajectories and fresh-before-KEEP are unchanged. Source supports that selection already; no new kernel or model execution follows.
+
+## 2026-10-18 — Owner waives the two Q4 timing cells; Relation+R successor drafted (claude)
+
+**Owner decision (in Claude's chat, 14:25Z; relayed at [#2029 6251027125](https://github.com/UOR-Foundation/uor-r4/issues/2029#issuecomment-6251027125)).** The owner waived the two Q4-occupancy timing cells of the K16 redirect's registered 100-sample timing slot. The slot now times only the checkpoint-0 K16-A and K16-R cells (100 samples each), and the Q4 importer is off the critical path. This is the explicit waiver that the "unless explicitly waived" clause of the immediate-priority entry below anticipated. Arms, bars, G-Pre/G-Adm/G-Occ/G-Guard, outcomes and the fresh seal are unchanged. Packet acceptance and training remain NO-GO until qualification.
+
+**Successor draft.** [`m1-learned-attention-link-R-DRAFT-2026-10-18.md`](../harness/prep/m1-learned-attention-link-R-DRAFT-2026-10-18.md) is the Relation + R successor named by the parent §7.12.4. It is unregistered and has no FIT. A non-author adversarial review returned SOUND-WITH-FIXES, and all six findings are applied:
+- an occupancy guard that makes a vacuous B3 pass INVALID;
+- registration only on K16-R passing G-Adm + G-Occ, with named withdrawal branches including `K16_A_KEEP_R_NULL_AT_SCOPE`;
+- no attribution across sheets or to R alone;
+- trajectory rules that forbid selection and require zero-apply;
+- per-arm scope strings;
+- C-R1..C-R6 as a prerequisite.
+
+A source check (`discrete.cu:125–247`) shows that the read width (8 context nodes) is independent of the writer's admitted cells (K), so no target is hidden from the read. **Next:** the redirect runs; this draft is registered or withdrawn by its outcome. No compute, $0.
+
+## 2026-10-18 — Documentation #2643 protected-delivered; own claim closeout
+
+[PR#2643](https://github.com/UOR-Foundation/uor-r4/pull/2643) squash-merged through the protected queue at `9fd1b8baec6a7586a2595cd4be94f6df77fd1c66`; fresh-main tree `90f743529b2e50ef72ec4120dd22869a3d0249aa` equals the revalidated delivery head. PR CI/harness and merge-group CI succeeded; the only post-merge Pages run is terminal/skipped by existing policy. [Closeout record](../labs/documentation-2643-closeout-2026-10-18/README.md) records exact checks, source identity and preservation. This unit removes only the delivered docs branch's own claim; peer state and research outcomes remain unchanged. **Next:** protected delivery and verification of that claim removal, then owned transport cleanup without deleting unique local evidence.
+
+## 2026-10-18 — Documentation merge reconciliation after R/K16 qualifier delivery
+
+[PR#2658](https://github.com/UOR-Foundation/uor-r4/pull/2658) is now merged at `43bca5e1`; its source-scoped active-R parity and five-sample diagnostic timings remain distinct from the complete new-head qualification, registered four-cell100-sample timing, measured budget and accepted redirect packet. Current STATUS/ROADMAP retain source/packet preparation GO and packet acceptance/training NO-GO under the [existing PM predicates](https://github.com/UOR-Foundation/uor-r4/issues/2029#issuecomment-6250526855). The documentation branch preserves both upstream qualifier entries and all prior Dose2/direction records; no source or scientific-gate change is authored here. **Next:** deliver the reviewed documentation through the protected merge queue, verify main and its applicable CI, then release this documentation branch's own claim after verified preservation.
+
+## 2026-10-18 — Active rank-hinge (R>0) row-parallel parity PASS (claude; PM audit fix)
+
+Kimi's audit found my K16 R parity vacuous: at ≤16 occupied cells, R = 0 everywhere. Attempt 5 adds a 64-cell fixture where **46/64 rows have R > 0**. Lanes-vs-rows parity under R holds on **134/134** Route/VectorBlock parameters, objective A differs on all 134 (the wrong-objective gate), and every earlier control passes again; the negative gate FAILs as required. At `3af49e029` this meets the R/K16 qualifier criteria. The final head adds only AGY P1/P2 error and state hardening, and it runs on GPU in the single new-head qualification session (PM item 4). The 5-sample timing is diagnostic; the registered 100-batch K16 slot is #2659. [Record](../labs/counterfactual-rows-parity-2026-10-18/README.md). About $0.20.
+
+## 2026-10-18 — Row-parallel parity under the rank-hinge objective at K16 PASS; redirect budget ~1.2 h (claude)
+
+Attempt 4 (RTX 5090) adds `rows_rank_objective_parity` (Route, K16, R and A, complete inventories): **1,368/1,368 PASS**, all earlier controls pass again, and the negative gate FAILs as required. K16 timing gives K16-A 7.40 s → 0.130 s and K16-R 7.40 s → 0.129 s (about 57×, equal losses). The owner-approved fast-path admission redirect (6250410397) therefore has GPU parity under its own objective and shape, and a measured budget of about 1.2 h for the four runs. [Record](../labs/counterfactual-rows-parity-2026-10-18/README.md). About $0.25. **Next:** Codex's redirect packet on `rows_v1`, then Claude's review and owner dispatch.
+
+## 2026-10-18 — Immediate priority: prepare and qualify the existing K16 A/R redirect on rows_v1
+
+The [owner direction6250410397](https://github.com/UOR-Foundation/uor-r4/issues/2029#issuecomment-6250410397) and [PM gate audit6250526855](https://github.com/UOR-Foundation/uor-r4/issues/2029#issuecomment-6250526855) prioritize the existing FIT'd K16-A/K16-R admission redirect on `rows_v1`, retaining Route/K16, seeds1/2, the registered16,404-batch schedule and scientific bars. **Source/packet preparation GO; packet acceptance and training NO-GO** pending exact-head qualification, measured timing/budget and an accepted regenerated D-Packet under the existing conditional release. Required evidence includes same-device/same-state/same-R-objective lanes/rows parity with **>16 occupied cells and an actual R>0 row**, 25/25 plus `admit_ptx`, G-Pre, C-R1..C-R6, refusals/terminals, negatives and zero apply; all four checkpoint-0/Q4 × A/R timing cells retain100 samples each plus one excluded warmup unless explicitly waived. Author [PR#2658](https://github.com/UOR-Foundation/uor-r4/pull/2658) results are not accepted readiness ([acknowledged limits and revised qualification6250595150](https://github.com/UOR-Foundation/uor-r4/issues/2029#issuecomment-6250595150)); the separate K8 Relation/R successor remains deferred planning, not an added K16 gate. **Next:** prepare and qualify the packet, then obtain measured packet acceptance before training; fresh execution remains before KEEP, not a training-start gate, and this documentation update launches nothing.
+
+## 2026-10-18 — Dose2 scientific review: configured admission collapse in both arms
+
+[Designated outcome-seat review6248429872](https://github.com/UOR-Foundation/uor-r4/issues/2029#issuecomment-6248429872) confirms the registered Q1 admission-collapse stop after **4,096 batches in each arm**: P_succ target admission **2,034 → 225 treatment /205 control**, not accuracy or a treatment win. No implementation or identity fault was found; no registered efficacy hypothesis fires, fresh remains sealed, and there is no KEEP or mechanism-negative verdict. A shared vector/combine pathway is source-supported and plausible, but its causal role is not established. Pod56510253 was released and down at **07:53:30 UTC**; [scorer compatibility#2652](https://github.com/UOR-Foundation/uor-r4/pull/2652) and [diagnostic publication#2653](https://github.com/UOR-Foundation/uor-r4/pull/2653) are merged. The [dated operational/custody record](../labs/attention-rows-q1-diagnosis-2026-10-18/README.md) retains its pre-review snapshot; this entry records the subsequent scientific review. **Next:** prospective next-configuration registration and owner decision under the existing sheet, with no resumed dose, retry, scoring or compute release implied. Count0/3 and reply37/232 SUSPENDED remain unchanged.
+
+## 2026-10-18 — Both rows learning arms reached Q1 diagnostic stops; complete custody and own close verified (Codex)
+
+At protected source`20d158ae` and actual RELEASE ELF`e7cb6197`, both paired arms reached **4,096 contiguous batches / Q1_STOP_FOR_DIAGNOSIS / exit0** under [owner release6246440910](https://github.com/UOR-Foundation/uor-r4/issues/2029#issuecomment-6246440910). P_succ target admission fell from2,034/3,847 initially to **225 treatment /205 frozen-zero**; both registered admission predicates fired with nonzero combine/relation sensitivity. These are admission counts, not accuracy or a paired advantage. Genuine [operational audit6247115698](https://github.com/UOR-Foundation/uor-r4/issues/2029#issuecomment-6247115698) verifies allthree registered native jobs terminal0, source/build/controller identities and empty GPUs; it does not replace the pending Claude scientific outcome review. Full DATA member SHA/same-reader/cloud MD5 and complete late-operator cloud readback preceded own `vast-56510253` down **07:53:30Z**; the separate after-down closure also passed full readback. [Canonical result and sanitized evidence](../labs/attention-rows-q1-diagnosis-2026-10-18/README.md); [actual sealed handoff6247444829](https://github.com/UOR-Foundation/uor-r4/issues/2029#issuecomment-6247444829). Both releases remain consumed; final16,404/map/224capture/fresh/scorer remain NOT_RUN, with no mechanism negative, KEEP or reset: **count0/3, reply37/232 SUSPENDED**. AGY's typed consumer repair is delivered in#2652 and source/metadata-reviewed at [6247409879](https://github.com/UOR-Foundation/uor-r4/pull/2652#issuecomment-6247409879); its diagnostic template does not license full scoring. **Next:** genuine scientific outcome review, then the existing prospective configuration/owner decision in sheet7.12.4; the conditional R source-dependency map is preparation, not a new objective, FIT or compute release. This documentary unit runs no model; the separately accounted resource proxy is$2.820481667, not an invoice.
+
+## 2026-10-18 — Typed `rows_v1` `DriverConfigRecord` schema compatibility in `attention_reference.rs` (antigravity)
+
+Adds `CounterfactualPath` (`LanesV1` default-skip, `RowsV1` explicit, `#[serde(rename_all = "snake_case")]`) and `#[serde(default, skip_serializing_if = "CounterfactualPath::is_lanes_v1")] pub counterfactual_path: CounterfactualPath` between `relation_learning_policy` and `seed` on `DriverConfigRecord` in `crates/uor-r4-harness/src/attention_reference.rs`, resolving the typed `rows_v1` lineage and Domain C `DriverCheckpointRecord` schema finding from [#2029 `6246867414`](https://github.com/UOR-Foundation/uor-r4/issues/2029#issuecomment-6246867414) without weakening `#[serde(deny_unknown_fields)]` or altering legacy `lanes_v1` canonical bytes (`c446aa7f…` / `1435f016…`). Unit tests verify exact producer `rows_v1` `config_sha256` (`c194cd6e4f3e5b127e6ef5dbe3294aa893a205518ed62a632da7236e57c72228` / `15a10bac9eb04bb84daaa71f9c580cfaa2e28151f05616da768aa9fc784d866f`), `lineage_sha256` (`f1403a8894563c99706b69fe501e066f1ca62951ddef5d870bf8df409d491a53` / `480c5bafd3a07ddfafd02bde47f71bfbce3544e677da0c7e289158ac4a2210c9`) against `consumer-panel-rows-treatment-v1/report.json` (`7f59e7c4…`), 4-domain checkpoint verification (`verify_driver_checkpoint_domains`), `paired-dev` arm path consistency, and unknown variant/field rejection. Both `rows_v1` Dose 1 arms reached `Q1_STOP_FOR_DIAGNOSIS` at batch `4,096` ([#2029 `6247068871`](https://github.com/UOR-Foundation/uor-r4/issues/2029#issuecomment-6247068871)); no full-dose scorer run, `KEEP`, mechanism-negative or count reset is claimed (`$0`, host-only). Record: [labs/rows-v1-consumer-config-schema-2026-10-18](../labs/rows-v1-consumer-config-schema-2026-10-18/README.md).
+
+## 2026-10-18 — Wire route counters accumulate across connections (kimi)
+
+Fixes the original #2613 P2: `WireGateway._handle` overwrote the persistent route bucket's `wire`
+bytes with the latest completed connection while `plain_in`/`plain_out` accumulated, understating the
+documented per-route ratio on reused routes. One-line change to `+=`; adds
+`spiralcore-base/wire/tools/wire_socket_stats_smoke.py`, which completes two connections with
+distinct wire counts on one route and asserts the bucket equals both sums and the aggregate ratio
+(negative control against the original source fails with the last-only counter). The branch is
+forward-merged with fresh `origin/main` (`58757e219`) without rebase; `WIRE_SOCKET_ROUTING_PASS`, the
+new `WIRE_SOCKET_STATS_PASS`, py_compile, claim wording and `git diff --check` pass at the merged
+head; host-only, no model compute, pods, training or evaluation. Claim:
+`kimi/wire-counter-aggregation-2026-10-18`; protected PR [#2651](https://github.com/UOR-Foundation/uor-r4/pull/2651) for exact-head review, not queued or merged.
+Record: [labs/wire-counter-aggregation-2026-10-18](../labs/wire-counter-aggregation-2026-10-18/README.md).
+
+## 2026-10-18  Seventh DeepSeek claims cleanup (deepseek)
+
+Removes the merged #2649 claim and the cleanup branch claim from docs/harness/claims.json. Coordination only; no code/model/evidence change.
+
+## 2026-10-18  UOROBJ01 non-Rust conformance run (deepseek)
+
+Runs the pure-Python port_agent.py peer against the Rust objpeer server: stale audit (exit 3), pinned
+pull byte-identical to the 256 KiB artifact, warm audit verified (exit 0), all through the wire
+protocol with no Rust client involved. Adds a reproducible smoke script and transcript, closing the
+backlog ask for a non-Rust UOROBJ01 verifier proof. Host-only, no protocol/model change.
+Record: [labs/uorobj01-conformance-2026-10-18](../labs/uorobj01-conformance-2026-10-18/README.md).
+PR: (added after creation).
+
+## 2026-10-18 — Original Dose 1 owner-stopped after 904/1,065 batches; custody verified; rows_v1 successor released separately (kimi)
+
+The [dispatch record](../labs/attention-dose1-dispatch-2026-10-18/README.md) binds the actual PM receipt [#2029 `6244964455`](https://github.com/UOR-Foundation/uor-r4/issues/2029#issuecomment-6244964455) and `DISPATCH_VALID` [#2029 `6244978507`](https://github.com/UOR-Foundation/uor-r4/issues/2029#issuecomment-6244978507): private `dispatch.json` `4f7681690f0ded838f8793a64117f3fdd96f2bf5464b2803730eb12f4fa543bb`, static manifest `5d5481cd6c19513c316d1f7144257bcf623b0c660afb0fb9c34f9052c0fb7c44` (234/234 read-only `shasum -c` pass), AGY verdict bytes `e3209a2a…`, source `23d5b146`, sheet `84481400…`, driver `9538f5c3…`, FIT `6230317153`, owner resolutions `6236444507` and attempt `uor-cf1-dose1-ac60c495ec8d601b267319b8cf548910`. Allocation is **CONFIRMED** at `vast-56488188` (`runtime-allocation.json` `1f1ed8db…58515`, two GPUs `[0,1]`, quote USD `1.893688888888889`/h total, a quote not an invoice, storage/transfer `UNMEASURED`); the RELEASE build is **metadata verified** (`RELEASE_BUILT_METADATA_VERIFIED`, exit 0, shared `8,099,440`-byte ELF `1f7dd526…dbb3`, source `64e4846374…`, kernel `5cd0e732…`, geometry `46ddbb76…`, no CUDA context); AGY approved **both** arms (`6245205468`), finalize exited 0 with final typed plans `e8d25b21…0297`/`a8b76562…8de40`, and both `attention-check-plan` entries are `PLAN_METADATA_VALID` with `owner_release` then `STILL_REQUIRED`. The owner then delegated the launch ([`6245307092`](https://github.com/UOR-Foundation/uor-r4/issues/2029#issuecomment-6245307092)) and both arms started at 03:48:36Z/03:48:38Z ([`6245367341`](https://github.com/UOR-Foundation/uor-r4/issues/2029#issuecomment-6245367341)). The owner chose **“Stop it; rerun on the fast path”** ([`6245711750`](https://github.com/UOR-Foundation/uor-r4/issues/2029#issuecomment-6245711750)); the run stopped after contiguous **904 treatment / 1,065 frozen-zero batches**, both below Q1 4,096, with native ends `04:58:38Z`/`04:58:40Z` and raw `COMMAND_FAILED_TERMINAL`/exit 143, independently attributed **OWNER_STOPPED_STRATEGIC** — not source failure, mechanism negative, Q1 diagnosis or KEEP. **Q1 NOT_REACHED_BOTH; dose NOT_COMPLETED; final maps/224 capture/fresh NOT_RUN; scientific verdict NOT_ISSUED**; the original dispatch is consumed. Custody was accepted ([`6246074493`](https://github.com/UOR-Foundation/uor-r4/issues/2029#issuecomment-6246074493)): 198 regular members/237,872,396 bytes; data `25,345,536`/MD5 `ec029a201130ab41b3cd89b3cc6355de` and late operator `143,634,944`/MD5 `a75a23a70ab438e46f399a96df39ad8e` verified before teardown; down 05:16:47Z; after-down closure `4,026,880`/MD5 `fb4a4a264408c44ae61fbad5559a7e05` read back 05:23:37Z; local closure record `c5ca0f6a…8274e`. The separate `rows_v1` successor was owner-released ([`6246440910`](https://github.com/UOR-Foundation/uor-r4/issues/2029#issuecomment-6246440910)) with packet `01833fa7…`, source `20d158ae…` and new pod `vast-56510253`; its outcome is not claimed here. No result, completed dose or count reset follows; `$0` for this record. **Next:** the successor proceeds under its own release; this attempt remains consumed.
+## 2026-10-18  Sixth DeepSeek claims cleanup (deepseek)
+
+Removes the merged #2646 claim and the cleanup branch claim from docs/harness/claims.json. Coordination only; no code/model/evidence change.
+
+## 2026-10-18  Fleet maintenance demo: audit, failover sync, repair (deepseek)
+
+Adds tools/fleet_maintenance.sh, the audit -> failover -> repair demo the backlog requested on real
+artifacts: two loopback replicas with a partitioned target set; verify audit (4 checks, stale/unknown),
+failover sync with a dead first replica (3 artifacts from the survivor), repair of the missing target
+(current=3, repaired=1, unavailable=0), and a final union-coverage audit (every target verified on at
+least one replica). Fail-closed JSON assertions; host-only, no protocol/model change.
+Record: [labs/object-store-fleet-maintenance-2026-10-18](../labs/object-store-fleet-maintenance-2026-10-18/README.md).
+PR: (added after creation).
+
+## 2026-10-18 — D37 harness propagation: prep rules, PM rules, plan and optimization record (kimi)
+
+Mechanically propagates the merged [D37](DECISIONS.md#d37--floating-point-is-legal-in-offline-training-only-d32s-learning-path-float-ban-is-revised) owner decision into the harness and current-authority documents; no new permission and no reinterpretation. `docs/harness/milestones.json` now scopes the D32 summary to the active discrete path/Dose 1 and adds an all-scope D37 rule sourced to `DECISIONS.md`; `crates/uor-r4-harness/src/prep.rs` and `scripts/harness/prep.py` both carry ten applicable rules including D37. `docs/harness/pm-rules.md` R5 pins policy schema `/7` and the serving float/transcendental/multiplier false commitments; R13 governs the active discrete path only, with a separate D37 offline float lane under R12/D31 that cannot weaken discrete exact instruments; that lane must remain geometric (SpiralCore/E8/FBS, icosian/quaternion, prime/zeta) and use its own scanned allowlist entry, added/reviewed with the pre-registration and never widening the discrete crate scan. `.kimi-code/AGENTS.md`, `docs/integration/project-track.md` and the [optimization path record](../labs/optimization-path-2026-10-18/README.md) now state offline float is legal only under D37 in such a separately scanned geometric module; dense matrix products, squashing, D11 serving, Dose 1 and all holds are unchanged. No model compute, pods or source-behavior change; $0. Checks: prep tests PASS, parity PASS under Python 3.12 (the system Python 3.9 reproduces only the pre-existing brief-receipts mismatch), `uor-harness check` exit 0 (0 errors; 87 + 1 at review, 86 + 1 pre-merge, 79 + 1 merged; live peer state), `prep-render` contains D37 and no stale D25-supersession sentence, policy check PASS, ratchets d23/d25/d32 at baseline, claim wording, fmt and `git diff --check` PASS. Record: [labs/d37-harness-propagation-2026-10-18](../labs/d37-harness-propagation-2026-10-18/README.md). **Next:** independent exact-head review and protected PM delivery; Dose 1 dispatch/decision remains the path dependency.
+
+## 2026-10-18 — Documentation front door and geometry reconciled to current source (Codex)
+
+The README, documentation hub, contributor navigation and active discrete-crate guide now distinguish selected M1 computation from retained research and separately qualified D11 serving. The [source-linked audit](../labs/documentation-reconciliation-2026-10-18/README.md) corrects dimensions, quaternion/norm and icosian/E8 explanations, K-versus-scan cost, figure labels and broken links, while preserving dated evidence. Live #2029 review/release and the 06:24 successor pod-up receipt supersede the earlier awaiting-review snapshot; no successor scientific outcome follows. Documentation/host checks only; no model behavior change, training or paid resource action. **Next:** independent draft-PR review, then refresh live status before delivery.
+
+## 2026-10-18  Fifth DeepSeek claims cleanup (deepseek)
+
+Removes the merged #2641 claim and the cleanup branch claim from docs/harness/claims.json. Coordination only; no code/model/evidence change.
+
+## 2026-10-18  Cold-join benchmark: tools/cold_join.sh (deepseek)
+
+Adds the end-to-end cold-join benchmark requested by the join record: cold store pull vs gzip
+download + local decompress + pinned join, then a warm delta, with real PULL_STATS/JOIN fields and
+fail-closed checks. Host-only loopback, 2 MiB single runs: text cold pull 33,777 B vs gzip 7,223 B
+(warm delta 252 B / 0 nodes); random cold pull 5,734,720 B vs gzip 2,097,823 B (ratio 1.00032),
+confirming the earlier incidental cold-pull figure. No protocol change, no model compute.
+Record: [labs/object-store-join-2026-10-17](../labs/object-store-join-2026-10-17/README.md).
+PR: (added after creation).
+
+## 2026-10-18 — Post-dose drafts: batched verified coordinates (BVG-K) and decode tokens/s baseline (claude)
+
+These two DRAFT prep sheets are not registered: no FIT is requested and no compute runs ($0). Each is to be registered after the fast-path Dose 1 decision. [BVG-K](../harness/prep/m1-batched-verified-coordinates-DRAFT-2026-10-18.md) is path step 3, the batched-coordinate learning-law change. Each batch scores K same-kind coordinates in one row-parallel launch and commits the better of the jointly verified set and the single best move, so each batch's loss can only fall. K = 1 is a bitwise rollback identity. The read share is preserved per coordinate, and the cursor gains a coordinate ordinal plus `committed_moves`. Arms are K = 1/4/16 at equal wall clock, with target-tokens/s as the lead metric. It was revised after an adversarial reviewer-subagent round (10 findings). [Decode tokens/s](../harness/prep/m1-decode-tokens-per-second-DRAFT-2026-10-18.md) is the optimization rung's missing baseline (owner metric: decode speed against context), drafted for Kimi's measurement-plan seat. **Next:** fast-path Dose 1 outcome; then register C1, BVG-K and decode against its decision.
+
+## 2026-10-18 — K16 draft source preserved inactive; no timing prerequisite (Codex)
+
+The unique draft2571 count-hardening source at `a3d8ca2d38f5fb2925e02ef7e7c09c8ead98323a` is retained as an exact six-file inactive patch plus metadata/INDEX row; isolated-index application to based325 restores the entire original tree `9e7208093cbd950a64ea2d31e37a07a760cc0f31`. Source-only review6229329805 remains distinct from construction/tests, the unresolved100-batch bridge and timing/model work, all NOT_RUN; historical disk shortage is not a current blocker or new programme. No active instrument, frozen timing3/binary, scientific bar or count changes: **count0/3, reply37/232 SUSPENDED**, no KEEP/negative/reset. [Canonical inactive record](../labs/k16-inactive-archive-2026-10-18/README.md). **Next:** protected archive delivery/restoration proof, then close2571 and clean only its preserved owned transport; this does not block the rows successor or issue a timing release.
+
 ## 2026-10-18  Fourth DeepSeek claims cleanup (deepseek)
 
 Removes the merged #2638 claim and the cleanup branch claim from docs/harness/claims.json. Coordination only; no code/model/evidence change.
@@ -14,7 +154,7 @@ PR: (added after creation).
 
 ## 2026-10-18 — Original Dose1 strategically stopped; partials and closure independently accepted (Codex)
 
-After reviewed rows-driver delivery, the owner's strategic stop ended the original source23d5 paired dose at **904/1065 batches**, before Q1; both raw wrapper/native exits143 remain preserved with separate OWNER_STOPPED_STRATEGIC provenance. Full original-data and late-operator SHA/cloud custody preceded own down at05:16:47Z; the separate after-down closure is also verified, with genuine independent actual-outcome approval [6246074493](https://github.com/UOR-Foundation/uor-r4/issues/2029#issuecomment-6246074493). No completed dose, final device maps/224 captures, fresh scoring, KEEP, mechanism negative or count reset follows: **count0/3, reply37/232 SUSPENDED**. [Canonical result and sanitized evidence](../labs/attention-dose1-strategic-stop-2026-10-18/README.md). **Next:** whole-packet review and new applicable owner release for the source20d rows successor; its1376-member/01833fa7 static packet is source/metadata preparation, NOT_READY/NOT_RELEASED/NOT_RUN.
+After reviewed rows-driver delivery, the owner's strategic stop ended the original source23d5 paired dose at **904/1065 batches**, before Q1; both raw wrapper/native exits143 remain preserved with separate OWNER_STOPPED_STRATEGIC provenance. Full original-data and late-operator SHA/cloud custody preceded own down at05:16:47Z; the separate after-down closure is also verified, with genuine independent actual-outcome approval [6246074493](https://github.com/UOR-Foundation/uor-r4/issues/2029#issuecomment-6246074493). No completed dose, final device maps/224 captures, fresh scoring, KEEP, mechanism negative or count reset follows: **count0/3, reply37/232 SUSPENDED**. [Canonical result and sanitized evidence](../labs/attention-dose1-strategic-stop-2026-10-18/README.md). **Next, updated after the separate successor:** source20d's1376-member/01833fa7 packet was owner-released and reached [paired Q1 diagnostic stops](../labs/attention-rows-q1-diagnosis-2026-10-18/README.md), with its own custody/closure complete and scientific outcome review pending. This does not reinterpret the original904/1065 partials or reuse either release.
 
 ## 2026-10-18  Third DeepSeek claims cleanup (deepseek)
 
