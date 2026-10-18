@@ -153,23 +153,24 @@ pub fn wasm_step(handle: u32, token: u32) -> Result<StepOut, String> {
     })
 }
 
-/// Serialize the session state (position + recurrence + read caches).
+/// Serialize the session state (position + recurrence + read caches) as an
+/// integer-safe little-endian stream ([`crate::session_codec`]) — no serde,
+/// no float, no division, R2-clean.
 #[inline(never)]
 pub fn wasm_save(handle: u32) -> Result<Vec<u8>, String> {
     with_slot_mut(handle, |slot| {
         let state = slot.session.save_state();
-        serde_json::to_vec(&state).map_err(|e| e.to_string())
+        Ok(crate::session_codec::encode(&state))
     })
 }
 
 /// Restore a serialized session into the same loaded model (the
 /// reload-identical test: save → fresh worker → restore → byte-identical
-/// greedy stream).
+/// greedy stream). Accepts the integer-safe codec stream only.
 #[inline(never)]
 pub fn wasm_restore(handle: u32, state: &[u8]) -> Result<(), String> {
     with_slot_mut(handle, |slot| {
-        let parsed =
-            serde_json::from_slice(state).map_err(|e: serde_json::Error| e.to_string())?;
+        let parsed = crate::session_codec::decode(state)?;
         slot.session.restore_state(&parsed).map_err(take_error)
     })
 }

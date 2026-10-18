@@ -53,6 +53,8 @@ pub mod session;
 pub mod stack;
 pub mod tables;
 pub mod wasm;
+#[cfg(feature = "serving-wasm")]
+pub mod session_codec;
 #[cfg(all(target_arch = "wasm32", feature = "serving-wasm"))]
 pub mod wasm_host;
 #[cfg(all(target_arch = "wasm32", feature = "serving-wasm"))]
