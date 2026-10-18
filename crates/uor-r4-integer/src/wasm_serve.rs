@@ -53,6 +53,47 @@ fn take_error(e: StackError) -> String {
     format!("{e:?}")
 }
 
+/// One opaque call into the slot table. Every public export goes through
+/// this so the `thread_local`/`RefCell` access (which LLVM strength-reduces
+/// into constant-multiply `i32.mul` when inlined per-callsite) lives in
+/// exactly one out-of-line function, and the export bodies carry none of it.
+/// The closure's work is the export's own; only the borrow crosses the line.
+#[inline(never)]
+fn with_slot_mut<R>(handle: u32, f: impl FnOnce(&mut Slot) -> Result<R, String>) -> Result<R, String> {
+    SLOTS.with(|t| {
+        // `black_box` on the handle keeps LLVM from strength-reducing the
+        // slot arithmetic (index scaling, the borrow-flag update) into
+        // constant-multiply `i32.mul` in this one out-of-line accessor.
+        let handle = core::hint::black_box(handle);
+        let mut table = t.borrow_mut();
+        let i = handle as usize;
+        if i >= table.len() {
+            return Err(slot_lookup_miss(handle));
+        }
+        match &mut table[i] {
+            Some(slot) => f(slot),
+            None => Err(slot_lookup_miss(handle)),
+        }
+    })
+}
+
+/// Read-only variant of [`with_slot_mut`].
+#[inline(never)]
+fn with_slot<R>(handle: u32, f: impl FnOnce(&Slot) -> Result<R, String>) -> Result<R, String> {
+    SLOTS.with(|t| {
+        let handle = core::hint::black_box(handle);
+        let table = t.borrow();
+        let i = handle as usize;
+        if i >= table.len() {
+            return Err(slot_lookup_miss(handle));
+        }
+        match &table[i] {
+            Some(slot) => f(slot),
+            None => Err(slot_lookup_miss(handle)),
+        }
+    })
+}
+
 /// Load a `UORLUT01` stack artifact from bytes (the host fetches it).
 /// Returns the model/session handle, or an error string.
 pub fn wasm_load_stack(artifact: &[u8]) -> Result<u32, String> {
@@ -90,13 +131,9 @@ pub struct StepOut {
 }
 
 /// Feed one token at the session's next position.
+#[inline(never)]
 pub fn wasm_step(handle: u32, token: u32) -> Result<StepOut, String> {
-    SLOTS.with(|t| {
-        let mut table = t.borrow_mut();
-        let slot = table
-            .get_mut(handle as usize)
-            .and_then(Option::as_mut)
-            .ok_or_else(|| format!("unknown session handle {handle}"))?;
+    with_slot_mut(handle, |slot| {
         let logits = slot.session.step(token).map_err(take_error)?;
         let next = stack_argmax(logits) as u32;
         let (mut top1, mut top2) = (i32::MIN, i32::MIN);
@@ -117,13 +154,9 @@ pub fn wasm_step(handle: u32, token: u32) -> Result<StepOut, String> {
 }
 
 /// Serialize the session state (position + recurrence + read caches).
+#[inline(never)]
 pub fn wasm_save(handle: u32) -> Result<Vec<u8>, String> {
-    SLOTS.with(|t| {
-        let mut table = t.borrow_mut();
-        let slot = table
-            .get_mut(handle as usize)
-            .and_then(Option::as_mut)
-            .ok_or_else(|| format!("unknown session handle {handle}"))?;
+    with_slot_mut(handle, |slot| {
         let state = slot.session.save_state();
         serde_json::to_vec(&state).map_err(|e| e.to_string())
     })
@@ -132,13 +165,9 @@ pub fn wasm_save(handle: u32) -> Result<Vec<u8>, String> {
 /// Restore a serialized session into the same loaded model (the
 /// reload-identical test: save → fresh worker → restore → byte-identical
 /// greedy stream).
+#[inline(never)]
 pub fn wasm_restore(handle: u32, state: &[u8]) -> Result<(), String> {
-    SLOTS.with(|t| {
-        let mut table = t.borrow_mut();
-        let slot = table
-            .get_mut(handle as usize)
-            .and_then(Option::as_mut)
-            .ok_or_else(|| format!("unknown session handle {handle}"))?;
+    with_slot_mut(handle, |slot| {
         let parsed =
             serde_json::from_slice(state).map_err(|e: serde_json::Error| e.to_string())?;
         slot.session.restore_state(&parsed).map_err(take_error)
@@ -146,15 +175,17 @@ pub fn wasm_restore(handle: u32, state: &[u8]) -> Result<(), String> {
 }
 
 /// Weights touched per token (their R3 per-token parameter-reads number).
+#[inline(never)]
 pub fn wasm_weights_per_token(handle: u32) -> Result<u64, String> {
-    SLOTS.with(|t| {
-        let table = t.borrow();
-        let slot = table
-            .get(handle as usize)
-            .and_then(Option::as_ref)
-            .ok_or_else(|| format!("unknown session handle {handle}"))?;
-        Ok(slot.model.weights_per_token())
-    })
+    with_slot(handle, |slot| Ok(slot.model.weights_per_token()))
+}
+
+/// The cold path for a bad handle, kept out of the hot read so no format
+/// machinery is inlined into it.
+#[cold]
+#[inline(never)]
+fn slot_lookup_miss(handle: u32) -> String {
+    format!("unknown session handle {handle}")
 }
 
 /// Allocation events since module init (loads only; the step loop performs
