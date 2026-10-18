@@ -1997,6 +1997,7 @@ fn stack_swiglu(model: &IntegerStackModel, gate: &[i32], up: &[i32], out: &mut [
 /// One recurrence step from the normalized state (pair tables built), into
 /// `b.proj`.
 #[inline(never)]
+#[inline(never)]
 fn stack_recurrence(
     model: &IntegerStackModel,
     r: &Recurrence,

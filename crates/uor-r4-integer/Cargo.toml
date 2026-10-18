@@ -47,19 +47,19 @@ wasm-bindgen = { version = "0.2.92", optional = true }
 [[bin]]
 name = "uor-chat"
 path = "src/bin/uor-chat.rs"
-required-features = ["historical-runtime"]
+required-features = ["serving-wasm"]
 
 [[bin]]
 name = "uor-r4-integer"
 path = "src/bin/uor-r4-integer.rs"
-required-features = ["historical-runtime"]
+required-features = ["serving-wasm"]
 
 [[bin]]
 name = "verify-integer"
 path = "src/bin/verify-integer.rs"
-required-features = ["historical-runtime"]
+required-features = ["serving-wasm"]
 
 [[bin]]
 name = "uor-r4-stack"
 path = "src/bin/uor-r4-stack.rs"
-required-features = ["historical-runtime"]
+required-features = ["serving-wasm"]

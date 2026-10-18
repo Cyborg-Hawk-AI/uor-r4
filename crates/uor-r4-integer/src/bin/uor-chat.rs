@@ -1064,7 +1064,10 @@ fn run_stack_chat(cli: &CliArgs) -> std::result::Result<(), StackCliError> {
         ));
     }
     let mut model = IntegerStackModel::load(artifact)?;
+    #[cfg(not(target_arch = "wasm32"))]
     model.set_threads(cli.threads)?;
+    #[cfg(target_arch = "wasm32")]
+    let _ = cli.threads;
     let mut chat = StackChat::from_tokenizer_path(&model, tokenizer_path, cli.protocol)?;
     if cli.read_mode == ReadMode::NoRead {
         eprintln!(
