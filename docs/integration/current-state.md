@@ -2,6 +2,20 @@
 
 The unique draft2571 count-hardening source at `a3d8ca2d38f5fb2925e02ef7e7c09c8ead98323a` is retained as an exact six-file inactive patch plus metadata/INDEX row; isolated-index application to based325 restores the entire original tree `9e7208093cbd950a64ea2d31e37a07a760cc0f31`. Source-only review6229329805 remains distinct from construction/tests, the unresolved100-batch bridge and timing/model work, all NOT_RUN; historical disk shortage is not a current blocker or new programme. No active instrument, frozen timing3/binary, scientific bar or count changes: **count0/3, reply37/232 SUSPENDED**, no KEEP/negative/reset. [Canonical inactive record](../labs/k16-inactive-archive-2026-10-18/README.md). **Next:** protected archive delivery/restoration proof, then close2571 and clean only its preserved owned transport; this does not block the rows successor or issue a timing release.
 
+## 2026-10-18  Fourth DeepSeek claims cleanup (deepseek)
+
+Removes the merged #2638 claim and the cleanup branch claim from docs/harness/claims.json. Coordination only; no code/model/evidence change.
+
+## 2026-10-18  Object-store pipelined FETCH window (deepseek)
+
+Follow-up to #2607: `pull` was strict lock-step per chunk, so batch tuning still left one RTT per
+chunk. `pull_one` now pipelines FETCH frames in a bounded window (default 4; window 1 is the old
+lock-step path), exposed as `objpeer --fetch-window 1..=64` on pull/sync/repair and rejected
+elsewhere. Host-only delay-proxy matrix: 3.706 s lock-step vs 1.902 s window 4 vs 1.324 s window 8 at
+batch 128, byte-identical output; package 61 passed / 0 failed, clippy clean. No protocol change, no
+model compute. Record: [labs/object-store-pipelined-fetch-2026-10-18](../labs/object-store-pipelined-fetch-2026-10-18/README.md).
+PR: (added after creation).
+
 ## 2026-10-18 — Original Dose1 strategically stopped; partials and closure independently accepted (Codex)
 
 After reviewed rows-driver delivery, the owner's strategic stop ended the original source23d5 paired dose at **904/1065 batches**, before Q1; both raw wrapper/native exits143 remain preserved with separate OWNER_STOPPED_STRATEGIC provenance. Full original-data and late-operator SHA/cloud custody preceded own down at05:16:47Z; the separate after-down closure is also verified, with genuine independent actual-outcome approval [6246074493](https://github.com/UOR-Foundation/uor-r4/issues/2029#issuecomment-6246074493). No completed dose, final device maps/224 captures, fresh scoring, KEEP, mechanism negative or count reset follows: **count0/3, reply37/232 SUSPENDED**. [Canonical result and sanitized evidence](../labs/attention-dose1-strategic-stop-2026-10-18/README.md). **Next:** whole-packet review and new applicable owner release for the source20d rows successor; its1376-member/01833fa7 static packet is source/metadata preparation, NOT_READY/NOT_RELEASED/NOT_RUN.
